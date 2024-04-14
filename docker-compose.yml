@@ -1,0 +1,46 @@
+version: '1.0'
+services:
+  frontend:
+    container_name: wolo-app-FE
+    image: frontend
+    build:
+      context: ./wolo-app
+      dockerfile: Dockerfile_frontend
+    ports:
+      - 3000:3000
+    volumes:
+      - wolo-FE:/path/to/fe/data
+
+  backend:
+    container_name: wolo-app-BE
+    image: backend
+    build: 
+      context: ./wolo-app-api
+      dockerfile: Dockerfile_backend
+    ports:
+      - "8080:8080"
+    env_file:
+      - ./wolo-app-api/.env
+    depends_on:
+      - dbpostgresql
+    restart: on-failure
+    volumes:
+      - wolo-BE:/path/to/be/data
+    
+  dbpostgresql:
+    container_name: dbpostgresql
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./wolo-app-api/.env
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    expose:
+      - 5432
+    restart: on-failure
+
+volumes:
+  db-data:
+  wolo-FE:
+  wolo-BE:
