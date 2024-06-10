@@ -20,6 +20,8 @@ services:
     restart: always
     ports:
       - "25:587"
+    volumes:
+      - mail:/var/mail
 
   backend:
     container_name: wolo-app-api
@@ -65,3 +67,4 @@ volumes:
   wolo-FE:
   wolo-BE:
   wolo-AI:
+  mail:
