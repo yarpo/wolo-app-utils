@@ -1,20 +1,25 @@
-version: '1.0'
 services:
+
   frontend:
     container_name: wolo-app-FE
-    image: frontend
     build:
       context: ./wolo-app
       dockerfile: Dockerfile_frontend
     ports:
       - 3000:3000
-    volumes:
-      - wolo-FE:/path/to/fe/data
+    depends_on:
+      - backend
+
+  mail:
+    container_name: smtp
+    image: bytemark/smtp
+    restart: always
+    ports:
+      - 25:587
 
   backend:
-    container_name: wolo-app-BE
-    image: backend
-    build: 
+    container_name: wolo-app-api
+    build:
       context: ./wolo-app-api
       dockerfile: Dockerfile_backend
     ports:
@@ -23,9 +28,11 @@ services:
       - ./wolo-app-api/.env
     depends_on:
       - dbpostgresql
+      - mail
+      - translations
     restart: on-failure
     volumes:
-      - wolo-BE:/path/to/be/data
+      - wolo-app-api:/home/gradle/.gradle
     
   dbpostgresql:
     container_name: dbpostgresql
@@ -36,11 +43,16 @@ services:
       - ./wolo-app-api/.env
     volumes:
       - db-data:/var/lib/postgresql/data
-    expose:
-      - 5432
     restart: on-failure
+
+  translations:
+    container_name: wolo-app-ai
+    build:
+      context: ./Woloapp-AI
+      dockerfile: Dockerfile_AI
+    ports:
+      - 5000:5000
 
 volumes:
   db-data:
-  wolo-FE:
-  wolo-BE:
+  wolo-app-api:
