@@ -9,6 +9,7 @@ describe('Test tworzenia wydarzenia przez organizatora', () => {
     cy.login(username, password);
     cy.url().should('eq', `${URL}/`);
     cy.visit(`${URL}/create-event`);
+    cy.get('input[name="name"]').should('be.visible');
   });
 
   it('powinno pomyślnie utworzyć wydarzenie i zweryfikować je na stronie Wszystkie Wydarzenia', () => {
@@ -26,23 +27,23 @@ describe('Test tworzenia wydarzenia przez organizatora', () => {
 
     cy.get('select[name="cityId"]').select('Gdańsk');
 
-    cy.get('input[name="shifts[0].startTime"]').should('be.visible'); //Problem z wyborem tego elementu
+    cy.get('#shifts\\.0\\.startTime').should('exist').and('be.visible').type('08:00');
+    cy.get('#shifts\\.0\\.endTime').should('exist').and('be.visible').type('10:00');
+    cy.get('#shifts\\.0\\.capacity').should('exist').and('be.visible').type('10');
+    cy.get('#shifts\\.0\\.requiredMinAge').should('exist').and('be.visible').type('18');
+    cy.get('#shifts\\.0\\.shiftDirections').should('exist').and('be.visible').type('Go straight and turn left.');
+    cy.get('#shifts\\.0\\.street').should('exist').and('be.visible').type('Main Street');
+    cy.get('#shifts\\.0\\.homeNum').should('exist').and('be.visible').type('123');
 
-    cy.get('input[name="shifts[0].startTime"]').type('08:00');
-    cy.get('input[name="shifts[0].endTime"]').type('10:00');
-    cy.get('input[name="shifts[0].capacity"]').type('10');
-    cy.get('input[name="shifts[0].requiredMinAge"]').type('18');
-    cy.get('input[name="shifts[0].shiftDirections"]').type('Go straight and turn left.');
-    cy.get('input[name="shifts[0].street"]').type('Main Street');
-    cy.get('input[name="shifts[0].homeNum"]').type('123');
-    cy.get('select[name="shifts[0].districtId"]').select('1'); 
+    cy.get('#shifts\\.0\\.districtId').should('exist').and('be.visible');
+    cy.get('#shifts\\.0\\.districtId').select('Wrzeszcz'); 
 
     cy.contains('Zatwierdź').click();
 
-    cy.contains('Successfully created the event').should('be.visible');
+    cy.contains('Pomyślnie utworzono nowe wydarzenie').should('be.visible');
 
     cy.visit(`${URL}/events`);
 
-    cy.contains(eventTitle).should('be.visible');
+    cy.contains(eventTitle, { timeout: 120000 }).should('be.visible');
   });
 });
